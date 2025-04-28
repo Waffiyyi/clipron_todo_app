@@ -1,86 +1,110 @@
-import {useState} from 'react';
-import {DragDropContext, Droppable, DropResult} from '@hello-pangea/dnd';
-import {useGetTodosQuery} from '../../services/api';
-import {TodoItem} from './TodoItem';
-import {AddTodoForm} from './AddTodoForm';
-import {TodoFilters} from './TodoFilters';
-import {Todo} from '../../types';
+import { useState } from 'react';
+import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { cn } from '../../utils/cn';
+import { AddTodoForm } from './AddTodoForm';
+import { TodoFilters } from './TodoFilters';
+import { TodoItem } from './TodoItem';
+import { Todo } from '../../types';
+import { useGetTodosQuery } from '../../services/api';
 import {useAuth} from "../../hooks/useAuth.ts";
 
-type Filters = {
-    status: string;
-    priority: string;
-    starred: boolean | null;
-    search: string;
-};
 const TodoList = () => {
     const {user} = useAuth();
-    const {data, isLoading, error} = useGetTodosQuery(user?.id || '');
-    console.log("data", data);
-    const [filters, setFilters] = useState<Filters>({
+    const { data, isLoading, error } = useGetTodosQuery(user?.id || '');
+    // const [updateTodo] = useUpdateTodoMutation();
+    const [layout, setLayout] = useState<'list' | 'grid'>('list');
+
+    const [filters, setFilters] = useState({
         status: 'all',
         priority: 'all',
-        starred: null,
+        starred: null as boolean | null,
         search: '',
     });
-    const handleDragEnd = (result: DropResult) => {
-        if (!result.destination) return;
-        // Handle reordering logic here
+
+    const handleDragEnd = async (result: DropResult) => {
+        if (!result.destination || !data) return;
+
+        const reorderedTodos = Array.from(data);
+        const [movedItem] = reorderedTodos.splice(result.source.index, 1);
+        reorderedTodos.splice(result.destination.index, 0, movedItem);
     };
 
     const filteredTodos = data?.filter((todo: Todo) => {
-        const matchesSearch = todo.title
-            .toLowerCase()
-            .includes(filters.search.toLowerCase());
+        const matchesSearch = todo.title.toLowerCase().includes(filters.search.toLowerCase());
         const matchesStatus =
             filters.status === 'all' ||
             (filters.status === 'completed' && todo.completed) ||
             (filters.status === 'active' && !todo.completed);
         const matchesPriority =
             filters.priority === 'all' || todo.priority === filters.priority;
-        console.log("todo.priority", todo.priority);
-        console.log("filters.priority", filters.priority);
         const matchesStarred =
             filters.starred === null || todo.starred === filters.starred;
 
         return matchesSearch && matchesStatus && matchesPriority && matchesStarred;
     });
 
-    if (isLoading) return <div >Loading...</div >;
-    if (error) return <div >Error loading todos</div >;
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-[50vh]">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-[hsl(var(--primary))] border-t-transparent" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[50vh] text-[hsl(var(--muted-foreground))]">
+                <ExclamationCircleIcon className="h-12 w-12 mb-4" />
+                <p>Error loading todos</p>
+            </div>
+        );
+    }
 
     return (
-        <div className="min-h-screen bg-background">
-            <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
-                <h1 className="text-3xl font-bold text-foreground mb-8">My
-                                                                        Tasks</h1 >
+        <div className="w-full max-w-5xl mx-auto p-4 md:p-6">
+            <h1 className="text-2xl font-semibold text-[hsl(var(--foreground))] mb-6">My Tasks</h1>
 
-                <AddTodoForm />
+            <AddTodoForm />
 
-                <TodoFilters filters={filters} setFilters={setFilters}/>
+            <TodoFilters filters={filters} setFilters={setFilters} />
 
-                <DragDropContext onDragEnd={handleDragEnd}>
-                    <Droppable droppableId="todos">
-                        {(provided) => (
-                            <div
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                className="space-y-4 mt-6"
-                            >
-                                {filteredTodos?.map((todo: Todo, index: number) => (
-                                    <TodoItem
-                                        key={todo.id}
-                                        todo={todo}
-                                        index={index}
-                                    />
-                                ))}
-                                {provided.placeholder}
-                            </div >
-                        )}
-                    </Droppable >
-                </DragDropContext >
-            </div >
-        </div >
+            <div className="flex justify-end mb-4">
+                <button
+                    className="text-sm text-[hsl(var(--primary))]"
+                    onClick={() => setLayout(layout === 'list' ? 'grid' : 'list')}
+                >
+                    Toggle {layout === 'list' ? 'Grid' : 'List'} View
+                </button>
+            </div>
+
+            <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="todos">
+                    {(provided) => (
+                        <div
+                            {...provided.droppableProps}
+                            ref={provided.innerRef}
+                            className={cn(
+                                "mt-6 transition-all duration-200 ease-in-out",
+                                layout === 'grid'
+                                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                                    : "flex flex-col space-y-3"
+                            )}
+                        >
+                            {filteredTodos?.map((todo: Todo, index: number) => (
+                                <TodoItem
+                                    key={todo.id}
+                                    todo={todo}
+                                    index={index}
+                                    layout={layout}
+                                />
+                            ))}
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
+        </div>
     );
 };
 
