@@ -1,6 +1,6 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {RootState} from '../store';
-import {LoginCredentials, RegisterCredentials, AuthResponse, Todo} from '../types';
+import {LoginCredentials, RegisterCredentials, AuthResponse, Todo, TodoList} from '../types';
 
 export const api = createApi({
     baseQuery: fetchBaseQuery({
@@ -32,17 +32,32 @@ export const api = createApi({
                 body: credentials,
             }),
         }),
-        getTodos: builder.query<Todo[], string>({
-            query: (userId) => `todos/user/${userId}`,
+        addTodoList: builder.mutation<TodoList, Partial<TodoList>>({
+            query: (data) => ({
+                url: `todos/create-list/${data.userId}`,
+                method: 'POST',
+                body: data,
+                params: {
+                    name: data.name
+                }
+            }),
+            invalidatesTags: ['Todo'],
+        }),
+        getTodoList: builder.query<TodoList[], string>({
+            query: (userId) => `todos/get-list/${userId}`,
             providesTags: ['Todo'],
         }),
-        addTodo: builder.mutation<Todo, Partial<Todo>, string>({
+        addTodo: builder.mutation<Todo, Partial<Todo>>({
             query: (data) => ({
                 url: `todos/create/${data.userId}`,
                 method: 'POST',
                 body: data,
             }),
             invalidatesTags: ['Todo'],
+        }),
+        getTodos: builder.query<Todo[], string>({
+            query: (userId) => `todos/user/${userId}`,
+            providesTags: ['Todo'],
         }),
         updateTodo: builder.mutation<Todo, {
             id: string;
@@ -72,4 +87,6 @@ export const {
     useAddTodoMutation,
     useUpdateTodoMutation,
     useDeleteTodoMutation,
+    useAddTodoListMutation,
+    useGetTodoListQuery
 } = api;

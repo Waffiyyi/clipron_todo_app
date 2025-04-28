@@ -53,7 +53,7 @@ export const AddTodoForm = () => {
                 <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value as 'LOW' | 'MEDIUM' | 'HIGH')}
-                    className="rounded-md border border-input bg-background px-3 py-2"
+                    className="rounded-md border text-[hsl(var(--foreground))] bg-background p-2 outline-none focus:outline-none"
                 >
                     <option value="LOW">Low</option >
                     <option value="MEDIUM">Medium</option >

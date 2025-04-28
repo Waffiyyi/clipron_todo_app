@@ -1,8 +1,9 @@
 import React from 'react';
-import {Bars3Icon as MenuIcon, MoonIcon, SunIcon} from "@heroicons/react/16/solid";
+import {ArrowRightCircleIcon, Bars3Icon as MenuIcon, MoonIcon, SunIcon} from "@heroicons/react/16/solid";
 import {BellIcon} from "@heroicons/react/24/outline";
 import { Button } from '../components/ui/Button';
 import {useTheme} from "../hooks/useTheme.ts";
+import {useAuth} from "../hooks/useAuth.ts";
 
 interface HeaderProps {
     toggleMobileMenu: () => void;
@@ -14,6 +15,7 @@ export const Header: React.FC<HeaderProps> = ({
                                                   toggleMobileNotifications
                                               }) => {
     const { theme, toggleTheme } = useTheme();
+    const {logout} = useAuth();
 
     return (
         <header className="h-14 px-4 flex items-center justify-between gap-2 border-b border-[hsl(var(--border))]">
@@ -30,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <h1 className="text-xl font-semibold text-[hsl(var(--foreground))]">Tasks</h1>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
                 {/*<Button*/}
                 {/*  variant="ghost"*/}
                 {/*  size="icon"*/}
@@ -54,6 +56,15 @@ export const Header: React.FC<HeaderProps> = ({
                         ? <SunIcon className="h-5 w-5" />
                         : <MoonIcon className="h-5 w-5" />
                     }
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={logout}
+                    aria-label="Logout"
+                    className="text-[hsl(var(--foreground))]"
+                >
+                    <ArrowRightCircleIcon className="h-5 w-5"/>
                 </Button>
                 <Button
                     variant="ghost"

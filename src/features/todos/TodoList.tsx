@@ -12,7 +12,6 @@ import {useAuth} from "../../hooks/useAuth.ts";
 const TodoList = () => {
     const {user} = useAuth();
     const { data, isLoading, error } = useGetTodosQuery(user?.id || '');
-    // const [updateTodo] = useUpdateTodoMutation();
     const [layout, setLayout] = useState<'list' | 'grid'>('list');
 
     const [filters, setFilters] = useState({
@@ -62,12 +61,14 @@ const TodoList = () => {
     }
 
     return (
-        <div className="w-full max-w-5xl mx-auto p-4 md:p-6">
-            <h1 className="text-2xl font-semibold text-[hsl(var(--foreground))] mb-6">My Tasks</h1>
-
-            <AddTodoForm />
-
+        <div className="w-full max-w-5xl mx-auto p-2">
             <TodoFilters filters={filters} setFilters={setFilters} />
+
+            <div className={'mt-10'}>
+                <h1 className="text-2xl font-semibold text-[hsl(var(--foreground))] mb-6 mt-6">My Tasks</h1>
+                <AddTodoForm />
+            </div>
+
 
             <div className="flex justify-end mb-4">
                 <button

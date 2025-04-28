@@ -29,7 +29,7 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md space-y-8 p-8 bg-card rounded-lg shadow-lg">
         <div>
-          <h2 className="text-3xl font-bold text-center text-foreground">
+          <h2 className="text-3xl font-bold text-center text-[hsl(var(--foreground))]">
             Create your account
           </h2>
         </div>
@@ -44,7 +44,7 @@ const Register = () => {
                 name="name"
                 type="text"
                 required
-                placeholder="Full name"
+                placeholder="Username"
                 value={formData.username}
                 onChange={(e) =>
                   setFormData({ ...formData, username: e.target.value })

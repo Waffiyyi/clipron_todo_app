@@ -26,10 +26,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md space-y-8 p-8 bg-card rounded-lg shadow-lg">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-md space-y-8 p-8 bg-[hsl(var(--card))] rounded-lg shadow-lg">
         <div>
-          <h2 className="text-3xl font-bold text-center text-foreground">
+          <h2 className="text-3xl font-bold text-center text-[hsl(var(--foreground))]">
             Sign in to your account
           </h2>
         </div>

@@ -18,38 +18,49 @@ const ProtectedRoute = ({children}: { children: React.ReactNode }) => {
 
 const AuthLayout = ({children}: { children: React.ReactNode }) => {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))]">
-            <div className="w-full max-w-md p-6 bg-[hsl(var(--card))] rounded-lg shadow-md">
-                {children}
-            </div>
-        </div>
+        <div >
+            {children}
+        </div >
     );
 };
 
 const App = () => {
     return (
-        <PersistGate loading={<div className="flex items-center justify-center min-h-screen">Loading...</div>} persistor={persistor}>
-            <Router>
-                <React.Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
-                    <Routes>
-                        <Route path="/login" element={<AuthLayout><Login /></AuthLayout>}/>
-                        <Route path="/register" element={<AuthLayout><Register /></AuthLayout>}/>
+        <PersistGate
+            loading={
+                <div className="flex items-center justify-center min-h-screen">Loading...</div >}
+            persistor={persistor}
+        >
+            <Router >
+                <React.Suspense
+                    fallback={
+                        <div className="flex items-center justify-center min-h-screen">Loading...</div >}
+                >
+                    <Routes >
+                        <Route
+                            path="/login"
+                            element={<AuthLayout ><Login /></AuthLayout >}
+                        />
+                        <Route
+                            path="/register"
+                            element={<AuthLayout ><Register /></AuthLayout >}
+                        />
                         <Route
                             path="/"
                             element={
-                                <ProtectedRoute>
-                                    <MainLayout>
+                                <ProtectedRoute >
+                                    <MainLayout >
                                         <TodoList />
-                                    </MainLayout>
-                                </ProtectedRoute>
+                                    </MainLayout >
+                                </ProtectedRoute >
                             }
                         />
                         <Route path="*" element={<NotFound />}/>
-                    </Routes>
-                </React.Suspense>
+                    </Routes >
+                </React.Suspense >
                 <Toaster position="top-right"/>
-            </Router>
-        </PersistGate>
+            </Router >
+        </PersistGate >
     );
 };
 

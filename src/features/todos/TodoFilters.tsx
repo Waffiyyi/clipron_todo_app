@@ -37,7 +37,7 @@ export const TodoFilters = ({filters, setFilters}: TodoFiltersProps) => {
                 />
             </div >
 
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 ">
                 <Button
                     variant={filters.status === 'all' ? 'default' : 'outline'}
                     onClick={() =>
@@ -61,6 +61,17 @@ export const TodoFilters = ({filters, setFilters}: TodoFiltersProps) => {
                     }
                 >
                     Completed
+                </Button >
+                <Button
+                    variant={filters.starred === true ? 'default' : 'outline'}
+                    onClick={() =>
+                        setFilters((prev) => ({
+                            ...prev,
+                            starred: prev.starred === true ? null : true,
+                        }))
+                    }
+                >
+                    Starred
                 </Button >
 
                 <div className="h-6 w-px bg-border mx-2"/>
@@ -100,17 +111,7 @@ export const TodoFilters = ({filters, setFilters}: TodoFiltersProps) => {
 
                 <div className="h-6 w-px bg-border mx-2"/>
 
-                <Button
-                    variant={filters.starred === true ? 'default' : 'outline'}
-                    onClick={() =>
-                        setFilters((prev) => ({
-                            ...prev,
-                            starred: prev.starred === true ? null : true,
-                        }))
-                    }
-                >
-                    Starred
-                </Button >
+
             </div >
         </div >
     );
