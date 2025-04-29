@@ -1,18 +1,26 @@
-import { useState } from 'react';
-import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
-import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
-import { cn } from '../../utils/cn';
-import { AddTodoForm } from './AddTodoForm';
-import { TodoFilters } from './TodoFilters';
-import { TodoItem } from './TodoItem';
-import { Todo } from '../../types';
-import { useGetTodosQuery } from '../../services/api';
+import {useState} from 'react';
+import {DragDropContext, Droppable, DropResult} from '@hello-pangea/dnd';
+import {ExclamationCircleIcon} from '@heroicons/react/24/outline';
+import {cn} from '../../utils/cn';
+import {AddTodoForm} from './AddTodoForm';
+import {TodoFilters} from './TodoFilters';
+import {TodoItem} from './TodoItem';
+import {Todo} from '../../types';
+import {useGetTodosQuery} from '../../services/api';
 import {useAuth} from "../../hooks/useAuth.ts";
+import {useParams} from "react-router-dom";
+import {useLayout} from "../../hooks/useLayout.ts";
+import {Bars3BottomRightIcon as ListIcon, TableCellsIcon as GridIcon} from "@heroicons/react/16/solid";
+import {Button} from "../../components/ui/Button.tsx";
 
 const TodoList = () => {
     const {user} = useAuth();
-    const { data, isLoading, error } = useGetTodosQuery(user?.id || '');
-    const [layout, setLayout] = useState<'list' | 'grid'>('list');
+    const {id, name} = useParams();
+    const {data, isLoading, error} = useGetTodosQuery({
+        userId: user?.id || '',
+        listId: id || ''
+    });
+    const {layout, toggleLayout} = useLayout();
 
     const [filters, setFilters] = useState({
         status: 'all',
@@ -46,38 +54,41 @@ const TodoList = () => {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-[50vh]">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-[hsl(var(--primary))] border-t-transparent" />
-            </div>
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-[hsl(var(--primary))] border-t-transparent"/>
+            </div >
         );
     }
 
     if (error) {
         return (
             <div className="flex flex-col items-center justify-center h-[50vh] text-[hsl(var(--muted-foreground))]">
-                <ExclamationCircleIcon className="h-12 w-12 mb-4" />
-                <p>Error loading todos</p>
-            </div>
+                <ExclamationCircleIcon className="h-12 w-12 mb-4"/>
+                <p >Error loading todos</p >
+            </div >
         );
     }
 
     return (
         <div className="w-full max-w-5xl mx-auto p-2">
-            <TodoFilters filters={filters} setFilters={setFilters} />
+            <TodoFilters filters={filters} setFilters={setFilters}/>
 
             <div className={'mt-10'}>
-                <h1 className="text-2xl font-semibold text-[hsl(var(--foreground))] mb-6 mt-6">My Tasks</h1>
+                <h1 className="text-2xl font-semibold text-[hsl(var(--foreground))] mb-6 mt-6">{name}</h1 >
                 <AddTodoForm />
-            </div>
+            </div >
 
 
             <div className="flex justify-end mb-4">
-                <button
-                    className="text-sm text-[hsl(var(--primary))]"
-                    onClick={() => setLayout(layout === 'list' ? 'grid' : 'list')}
+                <Button
+                    type={'button'}
+                    size={'icon'}
+                    variant={"ghost"}
+                    className="text-[hsl(var(--foreground))] cursor-pointer w-8 h-8"
+                    onClick={toggleLayout}
                 >
-                    Toggle {layout === 'list' ? 'Grid' : 'List'} View
-                </button>
-            </div>
+                     {layout === 'list' ? <ListIcon /> : <GridIcon/>}
+                </Button >
+            </div >
 
             <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId="todos">
@@ -101,11 +112,11 @@ const TodoList = () => {
                                 />
                             ))}
                             {provided.placeholder}
-                        </div>
+                        </div >
                     )}
-                </Droppable>
-            </DragDropContext>
-        </div>
+                </Droppable >
+            </DragDropContext >
+        </div >
     );
 };
 

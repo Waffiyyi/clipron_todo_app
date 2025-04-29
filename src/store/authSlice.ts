@@ -4,6 +4,7 @@ import {AuthState, User} from '../types';
 const initialState: AuthState = {
     user: null,
     jwt: null,
+    generalTodoListId:null,
     isAuthenticated: false,
     isLoading: false,
     error: null,
@@ -15,11 +16,12 @@ const authSlice = createSlice({
     reducers: {
         setCredentials: (
             state,
-            action: PayloadAction<{  jwt: string, user: User }>
+            action: PayloadAction<{  jwt: string, user: User, generalTodoListId:string }>
         ) => {
-            const { jwt, user} = action.payload;
+            const { jwt, user, generalTodoListId} = action.payload;
             state.jwt = jwt;
             state.user = user;
+            state.generalTodoListId = generalTodoListId;
             state.isAuthenticated = true;
             state.error = null;
         },

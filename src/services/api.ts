@@ -52,11 +52,19 @@ export const api = createApi({
                 url: `todos/create/${data.userId}`,
                 method: 'POST',
                 body: data,
+                params: {
+                    listId: data.listId
+                },
             }),
             invalidatesTags: ['Todo'],
         }),
-        getTodos: builder.query<Todo[], string>({
-            query: (userId) => `todos/user/${userId}`,
+        getTodos: builder.query<Todo[], { userId: string, listId: string }>({
+            query: ({userId, listId}) => ({
+                url: `todos/user/${userId}`,
+                params: {
+                    listId: listId
+                }
+            }),
             providesTags: ['Todo'],
         }),
         updateTodo: builder.mutation<Todo, {

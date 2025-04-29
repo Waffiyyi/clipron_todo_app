@@ -1,5 +1,5 @@
 import React from 'react';
-import {ArrowRightCircleIcon, Bars3Icon as MenuIcon, MoonIcon, SunIcon} from "@heroicons/react/16/solid";
+import {ArrowLeftEndOnRectangleIcon as LogoutIcon, Bars3Icon as MenuIcon, MoonIcon, SunIcon} from "@heroicons/react/16/solid";
 import {BellIcon} from "@heroicons/react/24/outline";
 import { Button } from '../components/ui/Button';
 import {useTheme} from "../hooks/useTheme.ts";
@@ -50,11 +50,10 @@ export const Header: React.FC<HeaderProps> = ({
                     size="icon"
                     onClick={toggleTheme}
                     aria-label="Toggle theme"
-                    className="text-[hsl(var(--foreground))]"
                 >
                     {theme === 'dark'
-                        ? <SunIcon className="h-5 w-5" />
-                        : <MoonIcon className="h-5 w-5" />
+                        ? <SunIcon className="h-6 w-6" />
+                        : <MoonIcon className="h-6 w-6" />
                     }
                 </Button>
                 <Button
@@ -62,15 +61,14 @@ export const Header: React.FC<HeaderProps> = ({
                     size="icon"
                     onClick={logout}
                     aria-label="Logout"
-                    className="text-[hsl(var(--foreground))]"
                 >
-                    <ArrowRightCircleIcon className="h-5 w-5"/>
+                    <LogoutIcon className="h-6 w-6"/>
                 </Button>
                 <Button
                     variant="ghost"
                     size="icon"
                     onClick={toggleMobileNotifications}
-                    className="lg:hidden p-2 text-[hsl(var(--foreground))]"
+                    className="md:hidden p-2 ]"
                     aria-label="Open Notifications"
                 >
                     <BellIcon className="h-5 w-5"/>

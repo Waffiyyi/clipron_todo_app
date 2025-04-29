@@ -8,10 +8,11 @@ import {
 } from '@heroicons/react/24/outline';
 import {Button} from '../components/ui/Button';
 import {useAuth} from "../hooks/useAuth.ts";
-import {ArrowRightCircleIcon, Bars4Icon} from "@heroicons/react/16/solid";
+import {ArrowLeftEndOnRectangleIcon as LogoutIcon, Bars3BottomRightIcon as ListIcon} from "@heroicons/react/16/solid";
 import {toast} from "react-hot-toast";
 import {useAddTodoListMutation, useGetTodoListQuery} from "../services/api.ts";
 import {Input} from "../components/ui/Input.tsx";
+import {useNavigate} from "react-router-dom";
 
 interface NavItemProps {
     icon: React.ReactElement<{ className?: string }>;
@@ -31,7 +32,7 @@ const NavItem: React.FC<NavItemProps> = ({icon, label, active, onClick}) => {
             )}
             onClick={onClick}
         >
-            {React.cloneElement(icon, {className: "h-5 w-5"})}
+            {React.cloneElement(icon, {className: "h-6 w-6"})}
             <span >{label}</span >
         </button >
     );
@@ -41,9 +42,11 @@ export const Sidebar: React.FC = () => {
     const [activeItem, setActiveItem] = React.useState('My Tasks');
     const {logout, user} = useAuth();
     const {data, isLoading, error} = useGetTodoListQuery(user?.id || '');
+    console.log(error,"error");
     const [addTodoList] = useAddTodoListMutation();
     const [name, setName] = useState('');
     const [creatingNewList, setCreatingNewList] = useState(false);
+    const navigate = useNavigate();
 
     const handleNavClick = (item: string) => {
         setActiveItem(item);
@@ -62,6 +65,7 @@ export const Sidebar: React.FC = () => {
             setCreatingNewList(false);
             toast.success('Todo List created successfully');
         } catch (error) {
+            console.error(error)
             toast.error('Failed to add todo list');
         }
     };
@@ -99,7 +103,7 @@ export const Sidebar: React.FC = () => {
                     </div >
                     <div >
                         <NavItem
-                            icon={<ArrowRightCircleIcon />}
+                            icon={<LogoutIcon />}
                             label="Logout"
                             active={activeItem === 'Logout'}
                             onClick={logout}
@@ -122,17 +126,21 @@ export const Sidebar: React.FC = () => {
                         {data?.map((item) => (
                             <NavItem
                                 key={item.id}
-                                icon={<Bars4Icon />}
+                                icon={<ListIcon />}
                                 label={item.name}
                                 active={activeItem === item.name}
-                                onClick={() => handleNavClick(item.name)}
+                                onClick={() => {
+                                    handleNavClick(item.name)
+                                    navigate(`/todos/${item.name}/${item.id}`)
+                                }
+                                }
                             />
                         ))}
                     </div >
                 )}
             </div >
 
-            <div className="mt-auto p-4 border-t border-[hsl(var(--border))]">
+            <div className="p-4 border-t border-[hsl(var(--border))]">
                 {creatingNewList ? (
                     <form
                         onSubmit={handleSubmit}

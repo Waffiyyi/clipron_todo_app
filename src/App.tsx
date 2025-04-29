@@ -46,7 +46,7 @@ const App = () => {
                             element={<AuthLayout ><Register /></AuthLayout >}
                         />
                         <Route
-                            path="/"
+                            path="/todos/:name/:id"
                             element={
                                 <ProtectedRoute >
                                     <MainLayout >

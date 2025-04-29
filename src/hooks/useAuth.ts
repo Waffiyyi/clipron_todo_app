@@ -18,6 +18,7 @@ export const useAuth = () => {
                 dispatch(setCredentials({
                     jwt: result.jwt,
                     user: result.user,
+                    generalTodoListId:result.generalTodoListId,
                 }));
             }
             return result;
@@ -35,6 +36,7 @@ export const useAuth = () => {
                 dispatch(setCredentials({
                     jwt: result.jwt,
                     user: result.user,
+                    generalTodoListId: result.generalTodoListId,
                 }));
             }
             return result;
@@ -52,6 +54,7 @@ export const useAuth = () => {
     return {
         user: auth.user,
         isAuthenticated: auth.isAuthenticated,
+        generalTodoListId: auth.generalTodoListId,
         isLoading: auth.isLoading,
         error: auth.error,
         login: handleLogin,

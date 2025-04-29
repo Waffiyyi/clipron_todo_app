@@ -16,6 +16,7 @@ export interface Todo {
     createdAt: string;
     updatedAt: string;
     userId: string;
+    listId: string;
 }
 
 export interface TodoList {
@@ -28,6 +29,7 @@ export interface AuthState {
     user: User | null;
     jwt: string | null;
     isAuthenticated: boolean;
+    generalTodoListId: string | null;
     isLoading: boolean;
     error: string | null;
 }
@@ -63,4 +65,5 @@ export interface AuthResponse {
     jwt: string;
     message: string;
     user: User;
+    generalTodoListId: string;
 }

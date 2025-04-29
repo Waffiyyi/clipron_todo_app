@@ -62,7 +62,7 @@ export const NotificationPanel: React.FC = () => {
   const [hasNewNotifications] = React.useState(true);
   
   return (
-    <div className="block border-l border-[hsl(var(--border))] w-80">
+    <div className="block border-l border-[hsl(var(--border))] ">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
