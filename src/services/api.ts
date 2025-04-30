@@ -1,6 +1,6 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {RootState} from '../store';
-import {LoginCredentials, RegisterCredentials, AuthResponse, Todo, TodoList} from '../types';
+import {LoginCredentials, RegisterCredentials, AuthResponse, Todo, TodoList, Notification} from '../types';
 
 export const api = createApi({
     baseQuery: fetchBaseQuery({
@@ -85,6 +85,11 @@ export const api = createApi({
             }),
             invalidatesTags: ['Todo'],
         }),
+        getNotifications: builder.query<Notification[], string>({
+            query: (userId) => `/notifications/due-todos/${userId}`,
+            providesTags: ['Todo'],
+            keepUnusedDataFor: 30,
+        }),
     }),
 });
 
@@ -96,5 +101,6 @@ export const {
     useUpdateTodoMutation,
     useDeleteTodoMutation,
     useAddTodoListMutation,
-    useGetTodoListQuery
+    useGetTodoListQuery,
+    useGetNotificationsQuery,
 } = api;

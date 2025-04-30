@@ -67,3 +67,15 @@ export interface AuthResponse {
     user: User;
     generalTodoListId: string;
 }
+
+export interface Notification {
+    id: string;
+    message: string;
+    notifyAt: string;
+    sent: boolean;
+    read: boolean;
+    todo: {
+        title: string;
+        id: string;
+    };
+}
