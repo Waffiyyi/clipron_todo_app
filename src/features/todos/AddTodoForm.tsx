@@ -31,6 +31,7 @@ export const AddTodoForm = () => {
                 listId: id,
             }).unwrap();
             setTitle('');
+            console.log("dueDate", dueDate?.toISOString());
             setDueDate(null);
             setPriority('MEDIUM');
             toast.success('Todo added successfully');

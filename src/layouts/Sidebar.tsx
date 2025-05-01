@@ -2,8 +2,6 @@ import React, {useState} from 'react';
 import {cn} from '../utils/cn';
 import {
     InboxIcon,
-    StarIcon,
-    CalendarIcon,
     PlusIcon
 } from '@heroicons/react/24/outline';
 import {Button} from '../components/ui/Button';
@@ -76,7 +74,7 @@ export const Sidebar: React.FC = () => {
     };
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="h-screen flex flex-col">
             <div className="p-4 border-b border-[hsl(var(--border))]">
                 <h2 className="text-xl font-bold mb-6 text-[hsl(var(--foreground))]">Todo
                                                                                      App</h2 >
@@ -88,18 +86,18 @@ export const Sidebar: React.FC = () => {
                             active={activeItem === 'My Tasks'}
                             onClick={() => handleNavClick('My Tasks')}
                         />
-                        <NavItem
-                            icon={<StarIcon />}
-                            label="Important"
-                            active={activeItem === 'Important'}
-                            onClick={() => handleNavClick('Important')}
-                        />
-                        <NavItem
-                            icon={<CalendarIcon />}
-                            label="Planned"
-                            active={activeItem === 'Planned'}
-                            onClick={() => handleNavClick('Planned')}
-                        />
+                        {/*<NavItem*/}
+                        {/*    icon={<StarIcon />}*/}
+                        {/*    label="Important"*/}
+                        {/*    active={activeItem === 'Important'}*/}
+                        {/*    onClick={() => handleNavClick('Important')}*/}
+                        {/*/>*/}
+                        {/*<NavItem*/}
+                        {/*    icon={<CalendarIcon />}*/}
+                        {/*    label="Planned"*/}
+                        {/*    active={activeItem === 'Planned'}*/}
+                        {/*    onClick={() => handleNavClick('Planned')}*/}
+                        {/*/>*/}
                     </div >
                     <div >
                         <NavItem

@@ -72,6 +72,7 @@ export interface Notification {
     id: string;
     message: string;
     notifyAt: string;
+    createdAt: string;
     sent: boolean;
     read: boolean;
     todo: {

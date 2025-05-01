@@ -16,7 +16,7 @@ export const api = createApi({
             return headers;
         },
     }),
-    tagTypes: ['Todo', 'Auth'],
+    tagTypes: ['Todo', 'Auth', 'Notification'],
     endpoints: (builder) => ({
         login: builder.mutation<AuthResponse, LoginCredentials>({
             query: (credentials) => ({
@@ -56,7 +56,7 @@ export const api = createApi({
                     listId: data.listId
                 },
             }),
-            invalidatesTags: ['Todo'],
+            invalidatesTags: ['Todo', 'Notification'],
         }),
         getTodos: builder.query<Todo[], { userId: string, listId: string }>({
             query: ({userId, listId}) => ({
@@ -87,9 +87,21 @@ export const api = createApi({
         }),
         getNotifications: builder.query<Notification[], string>({
             query: (userId) => `/notifications/due-todos/${userId}`,
-            providesTags: ['Todo'],
-            keepUnusedDataFor: 30,
+            providesTags: ['Notification'],
+            keepUnusedDataFor: 3000,
         }),
+        markNotificationAsRead: builder.mutation<void, string>({
+            query: (id) => ({
+                url: `/notifications/read-all/${id}`,
+                method: 'POST',
+            }),
+        }),
+        deleteNotification: builder.mutation<void, string>({
+            query: (id) => ({
+                url: `/notifications/delete/${id}`,
+                method: 'DELETE',
+            }),
+        })
     }),
 });
 
@@ -103,4 +115,6 @@ export const {
     useAddTodoListMutation,
     useGetTodoListQuery,
     useGetNotificationsQuery,
+    useMarkNotificationAsReadMutation,
+    useDeleteNotificationMutation
 } = api;
