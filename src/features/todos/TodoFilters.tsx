@@ -37,7 +37,7 @@ export const TodoFilters = ({filters, setFilters}: TodoFiltersProps) => {
                 />
             </div >
 
-            <div className="flex flex-wrap justify-between gap-2">
+            <div className="flex flex-wrap justify-start md:justify-between gap-4 ">
                 <div className={'flex flex-col md:flex-row gap-2'}>
                     {/* Status Filters */}
                     <Button

@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useMemo, useState} from 'react';
 import {DragDropContext, Droppable, DropResult} from '@hello-pangea/dnd';
 import {ExclamationCircleIcon} from '@heroicons/react/24/outline';
 import {cn} from '../../utils/cn';
@@ -12,15 +12,20 @@ import {useParams} from "react-router-dom";
 import {useLayout} from "../../hooks/useLayout.ts";
 import {Bars3BottomRightIcon as ListIcon, TableCellsIcon as GridIcon} from "@heroicons/react/16/solid";
 import {Button} from "../../components/ui/Button.tsx";
+import {useTodoOrder} from '../../hooks/useTodoOrder';
 
 const TodoList = () => {
     const {user} = useAuth();
     const {id, name} = useParams();
-    const {data, isLoading, error} = useGetTodosQuery({
+    const {data: initialData, isLoading, error} = useGetTodosQuery({
         userId: user?.id || '',
         listId: id || ''
     });
     const {layout, toggleLayout} = useLayout();
+    const {
+        orderedTodos,
+        reorderTodos
+    } = useTodoOrder(id || '', initialData || []);
 
     const [filters, setFilters] = useState({
         status: 'all',
@@ -29,27 +34,28 @@ const TodoList = () => {
         search: '',
     });
 
-    const handleDragEnd = async (result: DropResult) => {
-        if (!result.destination || !data) return;
-
-        const reorderedTodos = Array.from(data);
-        const [movedItem] = reorderedTodos.splice(result.source.index, 1);
-        reorderedTodos.splice(result.destination.index, 0, movedItem);
+    const handleDragEnd = (result: DropResult) => {
+        if (!result.destination) return;
+        reorderTodos(result.source.index, result.destination.index);
     };
 
-    const filteredTodos = data?.filter((todo: Todo) => {
-        const matchesSearch = todo.title.toLowerCase().includes(filters.search.toLowerCase());
-        const matchesStatus =
-            filters.status === 'all' ||
-            (filters.status === 'completed' && todo.completed) ||
-            (filters.status === 'active' && !todo.completed);
-        const matchesPriority =
-            filters.priority === 'all' || todo.priority === filters.priority;
-        const matchesStarred =
-            filters.starred === null || todo.starred === filters.starred;
+    const filteredTodos = useMemo(() => {
+        if (!orderedTodos) return [];
 
-        return matchesSearch && matchesStatus && matchesPriority && matchesStarred;
-    });
+        return orderedTodos.filter((todo: Todo) => {
+            const matchesSearch = todo.title.toLowerCase().includes(filters.search.toLowerCase());
+            const matchesStatus =
+                filters.status === 'all' ||
+                (filters.status === 'completed' && todo.completed) ||
+                (filters.status === 'active' && !todo.completed);
+            const matchesPriority =
+                filters.priority === 'all' || todo.priority === filters.priority;
+            const matchesStarred =
+                filters.starred === null || todo.starred === filters.starred;
+
+            return matchesSearch && matchesStatus && matchesPriority && matchesStarred;
+        });
+    }, [orderedTodos, filters]);
 
     if (isLoading) {
         return (
@@ -69,53 +75,56 @@ const TodoList = () => {
     }
 
     return (
-        <div className="w-full max-w-5xl mx-auto p-2 overflow-auto">
-            <TodoFilters filters={filters} setFilters={setFilters}/>
-
-            <div className={'mt-10'}>
-                <h1 className="text-2xl font-semibold text-[hsl(var(--foreground))] mb-6 mt-6">{name}</h1 >
-                <AddTodoForm />
+        <div
+            className="w-full max-w-5xl p-2 flex flex-col h-[calc(100vh-100px)]"
+        >
+            <div className="flex-grow-0">
+                <TodoFilters filters={filters} setFilters={setFilters}/>
+                <div className={'mt-10'}>
+                    <h1 className="text-2xl font-semibold text-[hsl(var(--foreground))] mb-6 mt-6">{name}</h1 >
+                    <AddTodoForm />
+                </div >
+                <div className="flex justify-end mb-4">
+                    <Button
+                        type={'button'}
+                        size={'icon'}
+                        variant={"ghost"}
+                        className="text-[hsl(var(--foreground))] cursor-pointer w-8 h-8"
+                        onClick={toggleLayout}
+                    >
+                        {layout === 'list' ? <ListIcon /> : <GridIcon />}
+                    </Button >
+                </div >
             </div >
 
-
-            <div className="flex justify-end mb-4">
-                <Button
-                    type={'button'}
-                    size={'icon'}
-                    variant={"ghost"}
-                    className="text-[hsl(var(--foreground))] cursor-pointer w-8 h-8"
-                    onClick={toggleLayout}
-                >
-                     {layout === 'list' ? <ListIcon /> : <GridIcon/>}
-                </Button >
+            <div className="flex-grow overflow-y-auto">
+                <DragDropContext onDragEnd={handleDragEnd}>
+                    <Droppable droppableId="todos">
+                        {(provided) => (
+                            <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                className={cn(
+                                    "transition-all duration-200 ease-in-out",
+                                    layout === 'grid'
+                                        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4"
+                                        : "flex flex-col space-y-3 pb-4"
+                                )}
+                            >
+                                {filteredTodos?.map((todo: Todo, index: number) => (
+                                    <TodoItem
+                                        key={todo.id}
+                                        todo={todo}
+                                        index={index}
+                                        layout={layout}
+                                    />
+                                ))}
+                                {provided.placeholder}
+                            </div >
+                        )}
+                    </Droppable >
+                </DragDropContext >
             </div >
-
-            <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="todos">
-                    {(provided) => (
-                        <div
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                            className={cn(
-                                "mt-6 transition-all duration-200 ease-in-out",
-                                layout === 'grid'
-                                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                                    : "flex flex-col space-y-3"
-                            )}
-                        >
-                            {filteredTodos?.map((todo: Todo, index: number) => (
-                                <TodoItem
-                                    key={todo.id}
-                                    todo={todo}
-                                    index={index}
-                                    layout={layout}
-                                />
-                            ))}
-                            {provided.placeholder}
-                        </div >
-                    )}
-                </Droppable >
-            </DragDropContext >
         </div >
     );
 };

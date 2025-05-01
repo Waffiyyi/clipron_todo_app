@@ -47,7 +47,6 @@ export const TodoItem = ({todo, index, layout}: TodoItemProps) => {
     const handleDelete = async () => {
         try {
             await deleteTodo(todo.id).unwrap();
-            toast.success('Todo deleted successfully');
         } catch (error) {
             toast.error('Failed to delete todo');
         }

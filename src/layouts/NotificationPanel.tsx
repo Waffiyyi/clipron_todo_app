@@ -80,7 +80,7 @@ export const NotificationPanel: React.FC = () => {
     };
 
     return (
-        <div className="block border-l border-[hsl(var(--border))]">
+        <div className="block border-l border-[hsl(var(--border))] overflow-auto max-h-screen">
             <div className="p-4">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">

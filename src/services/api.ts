@@ -83,7 +83,7 @@ export const api = createApi({
                 url: `/todos/delete/${id}`,
                 method: 'DELETE',
             }),
-            invalidatesTags: ['Todo'],
+            invalidatesTags: ['Todo', 'Notification'],
         }),
         getNotifications: builder.query<Notification[], string>({
             query: (userId) => `/notifications/due-todos/${userId}`,
