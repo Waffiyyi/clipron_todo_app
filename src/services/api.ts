@@ -4,7 +4,7 @@ import {LoginCredentials, RegisterCredentials, AuthResponse, Todo, TodoList, Not
 
 export const api = createApi({
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:8065/api/v1',
+        baseUrl: import.meta.env.VITE_API_BASE_URL,
         credentials: 'include',
         prepareHeaders: (headers, {getState}) => {
             const token = (getState() as RootState).auth.jwt;
