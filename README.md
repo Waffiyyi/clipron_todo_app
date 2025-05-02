@@ -129,4 +129,4 @@ You can find the backend with all the API's at this repository: https://github.c
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
