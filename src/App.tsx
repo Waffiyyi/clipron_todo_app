@@ -4,7 +4,7 @@ import {Toaster} from 'react-hot-toast';
 import {useAuth} from './hooks/useAuth';
 import {persistor} from './store';
 import {PersistGate} from 'redux-persist/integration/react';
-import {MainLayout} from './components/layouts';
+import {MainLayout} from './components/layout';
 import {Loading} from "./Loading.tsx";
 
 const Login = React.lazy(() => import('./features/auth/Login'));

@@ -70,9 +70,7 @@ const TodoList = () => {
         );
     }
     return (
-        <div
-            className="w-full max-w-5xl p-2 flex flex-col h-[calc(100vh-100px)]"
-        >
+        <div className="w-full max-w-5xl p-2 flex flex-col h-[calc(100vh-100px)]">
             <div className="flex-grow-0">
                 <TodoFilters filters={filters} setFilters={setFilters}/>
                 <div className={'mt-10'}>
@@ -93,32 +91,38 @@ const TodoList = () => {
             </div >
 
             <div className="flex-grow overflow-y-auto">
-                <DragDropContext onDragEnd={handleDragEnd}>
-                    <Droppable droppableId="todos">
-                        {(provided) => (
-                            <div
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                className={cn(
-                                    "transition-all duration-200 ease-in-out",
-                                    layout === 'grid'
-                                        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4"
-                                        : "flex flex-col space-y-3 pb-4"
-                                )}
-                            >
-                                {filteredTodos?.map((todo: Todo, index: number) => (
-                                    <TodoItem
-                                        key={todo.id}
-                                        todo={todo}
-                                        index={index}
-                                        layout={layout}
-                                    />
-                                ))}
-                                {provided.placeholder}
-                            </div >
-                        )}
-                    </Droppable >
-                </DragDropContext >
+                {filteredTodos.length === 0 ? (
+                    <p className="text-center text-[hsl(var(--muted-foreground))] py-8">
+                        No todos found. Add a new todo to get started!
+                    </p >
+                ) : (
+                    <DragDropContext onDragEnd={handleDragEnd}>
+                        <Droppable droppableId="todos">
+                            {(provided) => (
+                                <div
+                                    {...provided.droppableProps}
+                                    ref={provided.innerRef}
+                                    className={cn(
+                                        "transition-all duration-200 ease-in-out",
+                                        layout === 'grid'
+                                            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4"
+                                            : "flex flex-col space-y-3 pb-4"
+                                    )}
+                                >
+                                    {filteredTodos?.map((todo: Todo, index: number) => (
+                                        <TodoItem
+                                            key={todo.id}
+                                            todo={todo}
+                                            index={index}
+                                            layout={layout}
+                                        />
+                                    ))}
+                                    {provided.placeholder}
+                                </div >
+                            )}
+                        </Droppable >
+                    </DragDropContext >
+                )}
             </div >
         </div >
     );

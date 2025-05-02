@@ -31,8 +31,6 @@ export const useAuth = () => {
     const handleRegister = async (credentials: RegisterCredentials) => {
         try {
             const result = await register(credentials).unwrap();
-
-            console.log(result, "result");
             if (result.message) {
                 dispatch(setCredentials({
                     jwt: result.jwt,

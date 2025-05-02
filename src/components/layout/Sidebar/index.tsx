@@ -24,7 +24,7 @@ import LoaderOrError from "../../LoaderOrError.tsx";
 
 export const Sidebar: React.FC = () => {
     const [activeItem, setActiveItem] = useState('My Tasks');
-    const {logout, user} = useAuth();
+    const {logout, user, generalTodoListId} = useAuth();
     const {data, isLoading, error} = useGetTodoListQuery(user?.id || '');
     const [addTodoList] = useAddTodoListMutation();
     const [deleteList] = useDeleteTodoListMutation();
@@ -68,7 +68,7 @@ export const Sidebar: React.FC = () => {
     }
 
     return (
-        <div className="max-h-screen flex flex-col h-screen min-h-0">
+        <div className="flex flex-col h-[calc(100vh-50px)]">
             <div className="p-4 border-b border-[hsl(var(--border))]">
                 <nav className="flex flex-col justify-between gap-2 min-h-50">
                     <div >
@@ -114,33 +114,35 @@ export const Sidebar: React.FC = () => {
                                         navigate(`/todos/${item.name}/${item.id}`);
                                     }}
                                 />
-                                <div
-                                    className="relative pr-2"
-                                    tabIndex={0}
-                                    onBlur={() => setMenuOpenId(null)}
-                                >
-                                    <Button
-                                        variant={"ghost"}
-                                        size={"icon"}
-                                        className="p-1 rounded-full hover:bg-[hsl(var(--muted))]"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setMenuOpenId(menuOpenId === item.id ? null : item.id);
-                                        }}
+                                {item.id !== generalTodoListId && (
+                                    <div
+                                        className="relative pr-2"
+                                        tabIndex={0}
+                                        onBlur={() => setMenuOpenId(null)}
                                     >
-                                        <EllipsisVerticalIcon className="h-5 w-5 text-[hsl(var(--muted-foreground))]"/>
-                                    </Button >
-                                    {menuOpenId === item.id && (
-                                        <div className="absolute right-0 z-10 mt-1 w-28 rounded-md shadow-lg bg-white border border-gray-200">
-                                            <button
-                                                className="block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left"
-                                                onClick={() => handleDeleteTodoList(item.id)}
-                                            >
-                                                Delete
-                                            </button >
-                                        </div >
-                                    )}
-                                </div >
+                                        <Button
+                                            variant={"ghost"}
+                                            size={"icon"}
+                                            className="p-1 rounded-full hover:bg-[hsl(var(--muted))]"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setMenuOpenId(menuOpenId === item.id ? null : item.id);
+                                            }}
+                                        >
+                                            <EllipsisVerticalIcon className="h-5 w-5 text-[hsl(var(--muted-foreground))]"/>
+                                        </Button >
+                                        {menuOpenId === item.id && (
+                                            <div className="absolute right-0 z-10 mt-1 w-28 rounded-md shadow-lg bg-white border border-gray-200">
+                                                <button
+                                                    className="block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left"
+                                                    onClick={() => handleDeleteTodoList(item.id)}
+                                                >
+                                                    Delete
+                                                </button >
+                                            </div >
+                                        )}
+                                    </div >
+                                )}
                             </div >
                         ))}
                     </div >

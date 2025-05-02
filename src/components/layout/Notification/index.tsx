@@ -49,7 +49,7 @@ export const NotificationPanel: React.FC = () => {
     const icon = <ExclamationCircleIcon className="h-12 w-12 mb-4"/>;
 
     return (
-        <div className="block border-l border-[hsl(var(--border))] overflow-auto max-h-screen">
+        <div className="block overflow-auto h-[calc(100vh-50px)]">
             <div className="p-4">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
