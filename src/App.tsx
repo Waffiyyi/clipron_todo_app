@@ -4,7 +4,8 @@ import {Toaster} from 'react-hot-toast';
 import {useAuth} from './hooks/useAuth';
 import {persistor} from './store';
 import {PersistGate} from 'redux-persist/integration/react';
-import {MainLayout} from './layouts/MainLayout';
+import {MainLayout} from './components/layouts';
+import {Loading} from "./Loading.tsx";
 
 const Login = React.lazy(() => import('./features/auth/Login'));
 const Register = React.lazy(() => import('./features/auth/Register'));
@@ -28,13 +29,13 @@ const App = () => {
     return (
         <PersistGate
             loading={
-                <div className="flex items-center justify-center min-h-screen">Loading...</div >}
+                <Loading/>}
             persistor={persistor}
         >
             <Router >
                 <React.Suspense
                     fallback={
-                        <div className="flex items-center justify-center min-h-screen">Loading...</div >}
+                        <Loading/>}
                 >
                     <Routes >
                         <Route

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { cn } from '../utils/cn';
-import { Sidebar } from './Sidebar';
+import { cn } from '../../utils/cn.ts';
 import { Header } from './Header';
-import { NotificationPanel } from './NotificationPanel';
+import { NotificationPanel } from './Notification';
+import {Sidebar} from "./Sidebar";
 
 interface MainLayoutProps {
     children: React.ReactNode;

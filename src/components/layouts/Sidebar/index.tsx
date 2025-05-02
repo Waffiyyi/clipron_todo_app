@@ -1,69 +1,52 @@
 import React, {useState} from 'react';
-import {cn} from '../utils/cn';
 import {
     InboxIcon,
-    PlusIcon
+    PlusIcon,
+    EllipsisVerticalIcon
 } from '@heroicons/react/24/outline';
-import {Button} from '../components/ui/Button';
-import {useAuth} from "../hooks/useAuth.ts";
-import {ArrowLeftEndOnRectangleIcon as LogoutIcon, Bars3BottomRightIcon as ListIcon} from "@heroicons/react/16/solid";
+import {Button} from '../../ui/Button.tsx';
+import {useAuth} from "../../../hooks/useAuth.ts";
+import {
+    ArrowLeftEndOnRectangleIcon as LogoutIcon,
+    Bars3BottomRightIcon as ListIcon
+} from "@heroicons/react/16/solid";
 import {toast} from "react-hot-toast";
-import {useAddTodoListMutation, useGetTodoListQuery} from "../services/api.ts";
-import {Input} from "../components/ui/Input.tsx";
+import {
+    useAddTodoListMutation,
+    useDeleteTodoListMutation,
+    useGetTodoListQuery
+} from "../../../services/api.ts";
+import {Input} from "../../ui/Input.tsx";
 import {useNavigate} from "react-router-dom";
+import {NavItem} from "./NavItem";
+import LoaderOrError from "../../LoaderOrError.tsx";
 
-interface NavItemProps {
-    icon: React.ReactElement<{ className?: string }>;
-    label: string;
-    active?: boolean;
-    onClick?: () => void;
-}
-
-const NavItem: React.FC<NavItemProps> = ({icon, label, active, onClick}) => {
-    return (
-        <button
-            className={cn(
-                "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left",
-                "transition-colors duration-200",
-                "hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))]",
-                active ? "bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] font-medium" : "text-[hsl(var(--foreground))]"
-            )}
-            onClick={onClick}
-        >
-            {React.cloneElement(icon, {className: "h-6 w-6"})}
-            <span >{label}</span >
-        </button >
-    );
-};
 
 export const Sidebar: React.FC = () => {
-    const [activeItem, setActiveItem] = React.useState('My Tasks');
+    const [activeItem, setActiveItem] = useState('My Tasks');
     const {logout, user} = useAuth();
     const {data, isLoading, error} = useGetTodoListQuery(user?.id || '');
-    console.log(error,"error");
     const [addTodoList] = useAddTodoListMutation();
+    const [deleteList] = useDeleteTodoListMutation();
     const [name, setName] = useState('');
     const [creatingNewList, setCreatingNewList] = useState(false);
+    const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const handleNavClick = (item: string) => {
         setActiveItem(item);
     };
-    console.log("data", data);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim()) return;
         try {
-            await addTodoList({
-                name,
-                userId: user?.id,
-            }).unwrap();
+            await addTodoList({name, userId: user?.id}).unwrap();
             setName('');
             setCreatingNewList(false);
             toast.success('Todo List created successfully');
         } catch (error) {
-            console.error(error)
+            console.error(error);
             toast.error('Failed to add todo list');
         }
     };
@@ -73,11 +56,20 @@ export const Sidebar: React.FC = () => {
         setName('');
     };
 
+    const handleDeleteTodoList = async (id: string) => {
+        try {
+            await deleteList(id).unwrap();
+            toast.success('List deleted');
+            setMenuOpenId(null);
+        } catch (error: any) {
+            toast.error(error.data?.errorMessage || 'Failed to delete list');
+            console.error(error);
+        }
+    }
+
     return (
         <div className="max-h-screen flex flex-col h-screen min-h-0">
             <div className="p-4 border-b border-[hsl(var(--border))]">
-                <h2 className="text-xl font-bold mb-6 text-[hsl(var(--foreground))]">Todo
-                                                                                     App</h2 >
                 <nav className="flex flex-col justify-between gap-2 min-h-50">
                     <div >
                         <NavItem
@@ -86,18 +78,6 @@ export const Sidebar: React.FC = () => {
                             active={activeItem === 'My Tasks'}
                             onClick={() => handleNavClick('My Tasks')}
                         />
-                        {/*<NavItem*/}
-                        {/*    icon={<StarIcon />}*/}
-                        {/*    label="Important"*/}
-                        {/*    active={activeItem === 'Important'}*/}
-                        {/*    onClick={() => handleNavClick('Important')}*/}
-                        {/*/>*/}
-                        {/*<NavItem*/}
-                        {/*    icon={<CalendarIcon />}*/}
-                        {/*    label="Planned"*/}
-                        {/*    active={activeItem === 'Planned'}*/}
-                        {/*    onClick={() => handleNavClick('Planned')}*/}
-                        {/*/>*/}
                     </div >
                     <div >
                         <NavItem
@@ -111,28 +91,57 @@ export const Sidebar: React.FC = () => {
             </div >
 
             <div className="flex-1 overflow-y-auto p-4 min-h-0">
-                {isLoading ? (
-                    <div className="flex items-center justify-center h-[50vh]">
-                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[hsl(var(--primary))] border-t-transparent"/>
-                    </div >
-                ) : error ? (
-                    <p className="text-center text-sm text-red-500">Error
-                                                                    loading todo
-                                                                    list</p >
+                {(isLoading || error) ? (
+                    <LoaderOrError
+                        isLoading={isLoading}
+                        error={!!error}
+                        message="Error loading todo list"
+                        compact
+                    />
                 ) : (
                     <div className="flex flex-col gap-2">
                         {data?.map((item) => (
-                            <NavItem
+                            <div
                                 key={item.id}
-                                icon={<ListIcon />}
-                                label={item.name}
-                                active={activeItem === item.name}
-                                onClick={() => {
-                                    handleNavClick(item.name)
-                                    navigate(`/todos/${item.name}/${item.id}`)
-                                }
-                                }
-                            />
+                                className="relative flex items-center justify-between rounded-lg hover:bg-[hsl(var(--accent))]"
+                            >
+                                <NavItem
+                                    icon={<ListIcon />}
+                                    label={item.name}
+                                    active={activeItem === item.name}
+                                    onClick={() => {
+                                        handleNavClick(item.name);
+                                        navigate(`/todos/${item.name}/${item.id}`);
+                                    }}
+                                />
+                                <div
+                                    className="relative pr-2"
+                                    tabIndex={0}
+                                    onBlur={() => setMenuOpenId(null)}
+                                >
+                                    <Button
+                                        variant={"ghost"}
+                                        size={"icon"}
+                                        className="p-1 rounded-full hover:bg-[hsl(var(--muted))]"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setMenuOpenId(menuOpenId === item.id ? null : item.id);
+                                        }}
+                                    >
+                                        <EllipsisVerticalIcon className="h-5 w-5 text-[hsl(var(--muted-foreground))]"/>
+                                    </Button >
+                                    {menuOpenId === item.id && (
+                                        <div className="absolute right-0 z-10 mt-1 w-28 rounded-md shadow-lg bg-white border border-gray-200">
+                                            <button
+                                                className="block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left"
+                                                onClick={() => handleDeleteTodoList(item.id)}
+                                            >
+                                                Delete
+                                            </button >
+                                        </div >
+                                    )}
+                                </div >
+                            </div >
                         ))}
                     </div >
                 )}

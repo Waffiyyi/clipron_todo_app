@@ -8,9 +8,7 @@ export const api = createApi({
         credentials: 'include',
         prepareHeaders: (headers, {getState}) => {
             const token = (getState() as RootState).auth.jwt;
-            console.log("token", token);
             if (token) {
-                console.log("token got passed")
                 headers.set('authorization', `Bearer ${token}`);
             }
             return headers;
@@ -46,6 +44,13 @@ export const api = createApi({
         getTodoList: builder.query<TodoList[], string>({
             query: (userId) => `todos/get-list/${userId}`,
             providesTags: ['Todo'],
+        }),
+        deleteTodoList: builder.mutation<void, string>({
+            query: (id) => ({
+                url: `/todos/delete-list/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Todo', 'Notification'],
         }),
         addTodo: builder.mutation<Todo, Partial<Todo>>({
             query: (data) => ({
@@ -88,7 +93,7 @@ export const api = createApi({
         getNotifications: builder.query<Notification[], string>({
             query: (userId) => `/notifications/due-todos/${userId}`,
             providesTags: ['Notification'],
-            keepUnusedDataFor: 3000,
+            keepUnusedDataFor: 3600,
         }),
         markNotificationAsRead: builder.mutation<void, string>({
             query: (id) => ({
@@ -116,5 +121,6 @@ export const {
     useGetTodoListQuery,
     useGetNotificationsQuery,
     useMarkNotificationAsReadMutation,
-    useDeleteNotificationMutation
+    useDeleteNotificationMutation,
+    useDeleteTodoListMutation,
 } = api;

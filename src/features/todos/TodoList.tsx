@@ -13,6 +13,7 @@ import {useLayout} from "../../hooks/useLayout.ts";
 import {Bars3BottomRightIcon as ListIcon, TableCellsIcon as GridIcon} from "@heroicons/react/16/solid";
 import {Button} from "../../components/ui/Button.tsx";
 import {useTodoOrder} from '../../hooks/useTodoOrder';
+import LoaderOrError from "../../components/LoaderOrError.tsx";
 
 const TodoList = () => {
     const {user} = useAuth();
@@ -57,23 +58,17 @@ const TodoList = () => {
         });
     }, [orderedTodos, filters]);
 
-    if (isLoading) {
+    const icon = <ExclamationCircleIcon className="h-12 w-12 mb-4"/>;
+    if (isLoading || error) {
         return (
-            <div className="flex items-center justify-center h-[50vh]">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-[hsl(var(--primary))] border-t-transparent"/>
-            </div >
+            <LoaderOrError
+                isLoading={isLoading}
+                error={!!error}
+                message="Error loading todos"
+                icon={icon}
+            />
         );
     }
-
-    if (error) {
-        return (
-            <div className="flex flex-col items-center justify-center h-[50vh] text-[hsl(var(--muted-foreground))]">
-                <ExclamationCircleIcon className="h-12 w-12 mb-4"/>
-                <p >Error loading todos</p >
-            </div >
-        );
-    }
-
     return (
         <div
             className="w-full max-w-5xl p-2 flex flex-col h-[calc(100vh-100px)]"
