@@ -4,6 +4,7 @@ import {toast} from 'react-hot-toast';
 import {useAuth} from '../../hooks/useAuth';
 import {Button} from '../../components/ui/Button';
 import {Input} from '../../components/ui/Input';
+import MiniLoader from "../../components/MiniLoader.tsx";
 
 const Register = () => {
     const navigate = useNavigate();
@@ -13,15 +14,19 @@ const Register = () => {
         email: '',
         password: '',
     });
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
         try {
             await register(formData);
             toast.success('Registration successful!');
             navigate(`/todos/General/${generalTodoListId}`);
         } catch (error: any) {
             toast.error(error.data?.errorMessage || "Registration failed. Please try again.");
+        }finally {
+            setLoading(false);
         }
     };
 
@@ -97,9 +102,16 @@ const Register = () => {
                     </div >
 
                     <div >
-                        <Button type="submit" className="w-full">
-                            Sign up
-                        </Button >
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <MiniLoader size={20} />
+                                    Signing up...
+                                </div>
+                            ) : (
+                                'Sign up'
+                            )}
+                        </Button>
                     </div >
                 </form >
 

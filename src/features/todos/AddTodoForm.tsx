@@ -7,6 +7,7 @@ import {useAuth} from '../../hooks/useAuth.ts';
 import {useParams} from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import MiniLoader from "../../components/MiniLoader.tsx";
 
 export const AddTodoForm = () => {
     const {user} = useAuth();
@@ -15,6 +16,7 @@ export const AddTodoForm = () => {
     const [dueDate, setDueDate] = useState<Date | null>(null);
     const [priority, setPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH'>('MEDIUM');
     const {id} = useParams();
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,6 +25,7 @@ export const AddTodoForm = () => {
             toast.error('Due date cannot be in the past');
             return;
         }
+        setLoading(true)
         try {
             const localDueDate = dueDate ? new Date(dueDate.getTime() - dueDate.getTimezoneOffset() * 60000) : undefined;
             await addTodo({
@@ -40,6 +43,8 @@ export const AddTodoForm = () => {
             toast.success('Todo added successfully');
         } catch (error) {
             toast.error('Failed to add todo');
+        }finally {
+            setLoading(false);
         }
     };
     return (
@@ -72,8 +77,14 @@ export const AddTodoForm = () => {
                     <option value="HIGH">High</option >
                 </select >
 
-                <Button type="submit" className="w-full md:w-auto">
-                    Add Task
+                <Button type="submit" className="w-full md:w-auto" disabled={loading}>
+                    {loading ? (
+                        <div className="flex items-center justify-center gap-2">
+                            <MiniLoader size={20} />
+                        </div>
+                    ) : (
+                        'Add Task'
+                    )}
                 </Button >
             </div >
         </form >

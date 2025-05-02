@@ -4,6 +4,7 @@ import {toast} from 'react-hot-toast';
 import {useAuth} from '../../hooks/useAuth';
 import {Button} from '../../components/ui/Button';
 import {Input} from '../../components/ui/Input';
+import MiniLoader from "../../components/MiniLoader.tsx";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -12,16 +13,21 @@ const Login = () => {
         username: '',
         password: '',
     });
+    const [loading, setLoading] = useState(false);
+
 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
         try {
             await login(formData);
             toast.success('Login successful!');
             navigate(`/todos/General/${generalTodoListId}`);
         } catch (error:any) {
             toast.error(error.data?.errorMessage || 'Login failed. Please check your credentials.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -78,9 +84,16 @@ const Login = () => {
                     </div >
 
                     <div >
-                        <Button type="submit" className="w-full">
-                            Sign in
-                        </Button >
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <MiniLoader size={20} />
+                                    Signing in...
+                                </div>
+                            ) : (
+                                'Sign in'
+                            )}
+                        </Button>
                     </div >
                 </form >
 

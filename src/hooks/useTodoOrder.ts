@@ -39,7 +39,11 @@ export const useTodoOrder = (listId: string, initialTodos: Todo[] = []) => {
     );
 
     useEffect(() => {
-        setOrder(mergeOrders(getSavedOrder(listId), initialTodos));
+        const newOrder = mergeOrders(getSavedOrder(listId), initialTodos);
+        setOrder((prevOrder) => {
+            const hasChanged = JSON.stringify(prevOrder) !== JSON.stringify(newOrder);
+            return hasChanged ? newOrder : prevOrder;
+        });
     }, [listId, initialTodos]);
 
     useEffect(() => {

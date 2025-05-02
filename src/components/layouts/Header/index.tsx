@@ -1,7 +1,7 @@
 import React from 'react';
 import {ArrowLeftEndOnRectangleIcon as LogoutIcon, Bars3Icon as MenuIcon, MoonIcon, SunIcon} from "@heroicons/react/16/solid";
 import {BellIcon} from "@heroicons/react/24/outline";
-import { Button } from '../../ui/Button.tsx';
+import {Button} from '../../ui/Button.tsx';
 import {useTheme} from "../../../hooks/useTheme.ts";
 import {useAuth} from "../../../hooks/useAuth.ts";
 
@@ -14,8 +14,8 @@ export const Header: React.FC<HeaderProps> = ({
                                                   toggleMobileMenu,
                                                   toggleMobileNotifications
                                               }) => {
-    const { theme, toggleTheme } = useTheme();
-    const {logout} = useAuth();
+    const {theme, toggleTheme} = useTheme();
+    const {logout, user} = useAuth();
 
     return (
         <header className="h-14 px-4 flex items-center justify-between gap-2 border-b border-[hsl(var(--border))]">
@@ -27,12 +27,15 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={toggleMobileMenu}
                     aria-label="Toggle menu"
                 >
-                    <MenuIcon className="h-5 w-5" />
-                </Button>
-                <h1 className="text-2xl font-semibold text-[hsl(var(--foreground))]">Donezo</h1>
-            </div>
+                    <MenuIcon className="h-5 w-5"/>
+                </Button >
+                <h1 className="text-2xl font-semibold text-[hsl(var(--foreground))]">Donezo</h1 >
+            </div >
 
             <div className="flex items-center gap-1">
+                <div className="size-8 rounded-full bg-gray-100 flex items-center justify-center">
+                    <span className="text-gray-600 font-medium capitalize">{user?.username.charAt(0)}</span >
+                </div >
                 <Button
                     variant="ghost"
                     size="icon"
@@ -40,10 +43,10 @@ export const Header: React.FC<HeaderProps> = ({
                     aria-label="Toggle theme"
                 >
                     {theme === 'dark'
-                        ? <SunIcon className="h-6 w-6" />
-                        : <MoonIcon className="h-6 w-6" />
+                        ? <SunIcon className="h-6 w-6"/>
+                        : <MoonIcon className="h-6 w-6"/>
                     }
-                </Button>
+                </Button >
                 <Button
                     variant="ghost"
                     size="icon"
@@ -51,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
                     aria-label="Logout"
                 >
                     <LogoutIcon className="h-6 w-6"/>
-                </Button>
+                </Button >
                 <Button
                     variant="ghost"
                     size="icon"
@@ -61,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                     <BellIcon className="h-5 w-5"/>
                 </Button >
-            </div>
+            </div >
 
         </header >
     );
