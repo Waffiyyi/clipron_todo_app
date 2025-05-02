@@ -8,7 +8,7 @@ import MiniLoader from "../../components/MiniLoader.tsx";
 
 const Register = () => {
     const navigate = useNavigate();
-    const {register, generalTodoListId} = useAuth();
+    const {register} = useAuth();
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -20,12 +20,14 @@ const Register = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await register(formData);
+            const result = await register(formData);
             toast.success('Registration successful!');
-            navigate(`/todos/General/${generalTodoListId}`);
+            if (result.generalTodoListId) {
+                navigate(`/todos/General/${result.generalTodoListId}`);
+            }
         } catch (error: any) {
             toast.error(error.data?.errorMessage || "Registration failed. Please try again.");
-        }finally {
+        } finally {
             setLoading(false);
         }
     };
@@ -102,16 +104,20 @@ const Register = () => {
                     </div >
 
                     <div >
-                        <Button type="submit" className="w-full" disabled={loading}>
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={loading}
+                        >
                             {loading ? (
                                 <div className="flex items-center justify-center gap-2">
-                                    <MiniLoader size={20} />
+                                    <MiniLoader size={20}/>
                                     Signing up...
-                                </div>
+                                </div >
                             ) : (
                                 'Sign up'
                             )}
-                        </Button>
+                        </Button >
                     </div >
                 </form >
 

@@ -8,7 +8,7 @@ import MiniLoader from "../../components/MiniLoader.tsx";
 
 const Login = () => {
     const navigate = useNavigate();
-    const {login, generalTodoListId} = useAuth();
+    const {login} = useAuth();
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -16,15 +16,16 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
 
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await login(formData);
+            const result = await login(formData);
             toast.success('Login successful!');
-            navigate(`/todos/General/${generalTodoListId}`);
-        } catch (error:any) {
+            if (result.generalTodoListId) {
+                navigate(`/todos/General/${result.generalTodoListId}`);
+            }
+        } catch (error: any) {
             toast.error(error.data?.errorMessage || 'Login failed. Please check your credentials.');
         } finally {
             setLoading(false);
@@ -84,16 +85,20 @@ const Login = () => {
                     </div >
 
                     <div >
-                        <Button type="submit" className="w-full" disabled={loading}>
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={loading}
+                        >
                             {loading ? (
                                 <div className="flex items-center justify-center gap-2">
-                                    <MiniLoader size={20} />
+                                    <MiniLoader size={20}/>
                                     Signing in...
-                                </div>
+                                </div >
                             ) : (
                                 'Sign in'
                             )}
-                        </Button>
+                        </Button >
                     </div >
                 </form >
 
