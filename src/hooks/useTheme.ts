@@ -13,16 +13,14 @@ export const useTheme = () => {
 
     useEffect(() => {
         const root = window.document.documentElement;
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         root.classList.remove('light', 'dark');
         root.classList.add(theme);
         localStorage.setItem('theme', theme);
-
-        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) {
-            const lightBg = '#ffffff';
-            const darkBg = '#0f172a';
-            metaThemeColor.setAttribute('content', theme === 'dark' ? darkBg : lightBg);
+            metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
         }
+
     }, [theme]);
 
     const toggleTheme = () => {
