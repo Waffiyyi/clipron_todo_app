@@ -26,16 +26,17 @@ const AuthLayout = ({children}: { children: React.ReactNode }) => {
 };
 
 const App = () => {
+    const {isAuthenticated, generalTodoListId} = useAuth();
     return (
         <PersistGate
             loading={
-                <Loading/>}
+                <Loading />}
             persistor={persistor}
         >
             <Router >
                 <React.Suspense
                     fallback={
-                        <Loading/>}
+                        <Loading />}
                 >
                     <Routes >
                         <Route
@@ -58,8 +59,16 @@ const App = () => {
                         />
                         <Route
                             path="/"
-                            element={<Navigate to="/login" replace/>}
+                            element={
+                                isAuthenticated
+                                    ? <Navigate
+                                        to={`/todos/General/${generalTodoListId}`}
+                                        replace
+                                    />
+                                    : <Navigate to="/login" replace/>
+                            }
                         />
+
                         <Route path="*" element={<NotFound />}/>
                     </Routes >
                 </React.Suspense >
