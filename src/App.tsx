@@ -6,6 +6,7 @@ import {persistor} from './store';
 import {PersistGate} from 'redux-persist/integration/react';
 import {MainLayout} from './components/layout';
 import {Loading} from "./Loading.tsx";
+import {SessionExpired} from "./components/SessionExpired.tsx";
 
 const Login = React.lazy(() => import('./features/auth/Login'));
 const Register = React.lazy(() => import('./features/auth/Register'));
@@ -25,57 +26,71 @@ const AuthLayout = ({children}: { children: React.ReactNode }) => {
     );
 };
 
+
+const AppContent = () => {
+    const {
+        isAuthenticated,
+        generalTodoListId,
+        sessionExpired,
+        confirmSessionExpired
+    } = useAuth();
+    const hideModalOnPaths = ['/login', '/register'];
+    const shouldShowModal = sessionExpired && !hideModalOnPaths.includes(location.pathname);
+    return (
+        <>
+            <React.Suspense fallback={<Loading />}>
+                <Routes >
+                    <Route
+                        path="/login"
+                        element={<AuthLayout ><Login /></AuthLayout >}
+                    />
+                    <Route
+                        path="/register"
+                        element={<AuthLayout ><Register /></AuthLayout >}
+                    />
+                    <Route
+                        path="/todos/:name/:id"
+                        element={
+                            <ProtectedRoute >
+                                <MainLayout >
+                                    <TodoList />
+                                </MainLayout >
+                            </ProtectedRoute >
+                        }
+                    />
+                    <Route
+                        path="/"
+                        element={
+                            isAuthenticated
+                                ? <Navigate
+                                    to={`/todos/General/${generalTodoListId}`}
+                                    replace
+                                />
+                                : <Navigate to="/login" replace/>
+                        }
+                    />
+                    <Route path="*" element={<NotFound />}/>
+                </Routes >
+            </React.Suspense >
+            <Toaster position="top-right"/>
+
+            {shouldShowModal && (
+                <SessionExpired onConfirm={confirmSessionExpired}/>
+            )}
+        </>
+    );
+};
+
 const App = () => {
-    const {isAuthenticated, generalTodoListId} = useAuth();
     return (
         <PersistGate
-            loading={
-                <Loading />}
+            loading={<Loading />}
             persistor={persistor}
         >
             <Router >
-                <React.Suspense
-                    fallback={
-                        <Loading />}
-                >
-                    <Routes >
-                        <Route
-                            path="/login"
-                            element={<AuthLayout ><Login /></AuthLayout >}
-                        />
-                        <Route
-                            path="/register"
-                            element={<AuthLayout ><Register /></AuthLayout >}
-                        />
-                        <Route
-                            path="/todos/:name/:id"
-                            element={
-                                <ProtectedRoute >
-                                    <MainLayout >
-                                        <TodoList />
-                                    </MainLayout >
-                                </ProtectedRoute >
-                            }
-                        />
-                        <Route
-                            path="/"
-                            element={
-                                isAuthenticated
-                                    ? <Navigate
-                                        to={`/todos/General/${generalTodoListId}`}
-                                        replace
-                                    />
-                                    : <Navigate to="/login" replace/>
-                            }
-                        />
-
-                        <Route path="*" element={<NotFound />}/>
-                    </Routes >
-                </React.Suspense >
-                <Toaster position="top-right"/>
+                <AppContent />
             </Router >
         </PersistGate >
     );
 };
-
 export default App;
