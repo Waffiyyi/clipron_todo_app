@@ -68,6 +68,7 @@ export const useAuth = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('jwt');
+        setSessionExpired(false);
         dispatch(logout());
     };
     const confirmSessionExpired = () => {
